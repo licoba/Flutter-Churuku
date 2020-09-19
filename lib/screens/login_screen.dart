@@ -1,5 +1,10 @@
+import 'dart:math';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_churuku/common/localization/default_localizations.dart';
+import 'package:flutter_churuku/common/utils/common_utils.dart';
 import 'package:flutter_churuku/others/constants.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,6 +14,24 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
+  var _username = '';
+  var _password = '';
+
+  //用户名输入框控制器，此控制器可以监听用户名输入框操作  https://blog.csdn.net/ljh910329/article/details/95471566
+  TextEditingController _userNameController = new TextEditingController();
+  TextEditingController _passWordController = new TextEditingController();
+
+  @override
+  void initState() {
+    _userNameController.addListener(() {
+      print('手机号更新：' + _userNameController.text);
+    });
+
+    _passWordController.addListener(() {
+      print('密码更新：' + _passWordController.text);
+    });
+    super.initState();
+  }
 
   Widget _buildPhoneTF() {
     return Column(
@@ -24,7 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
-            keyboardType: TextInputType.phone, //数字输入框
+            controller: _userNameController,
+            keyboardType: TextInputType.phone,
+            //数字输入框
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(11),
+              FilteringTextInputFormatter.digitsOnly, // 新版的API
+            ],
             style: TextStyle(
               color: Colors.white,
             ),
@@ -59,6 +88,10 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 60.0,
           child: TextField(
             obscureText: true,
+            controller: _passWordController,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(25),
+            ],
             style: TextStyle(
               color: Colors.white,
             ),
@@ -119,7 +152,36 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginBtn() {
+  //登录方法
+  _doLogin() async {
+    CommonUtils.showLoadingDialog(context,'正在登录，请稍后...');
+    // Navigator.pop(context);
+    // yield LoginSuccessAction(action.context, (res != null && res.result));
+  }
+
+  // 参照 https://book.flutterchina.club/chapter7/dailog.html
+  showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, //点击遮罩不关闭对话框
+      builder: (context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              CircularProgressIndicator(),
+              Padding(
+                padding: const EdgeInsets.only(top: 26.0),
+                child: Text("正在登录，请稍后..."),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLoginBtn(context) {
     return Column(children: [
       SizedBox(height: 80),
       Container(
@@ -128,7 +190,30 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         child: RaisedButton(
           elevation: 5.0,
-          onPressed: () => print('Login Button Pressed'),
+          onPressed: () {
+            print('Login Button Pressed');
+            if (_userNameController.text.isEmpty)
+              {
+                Scaffold.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(SnackBar(
+                    content: Text('请输入手机号'),
+                  ));
+                return;
+              }
+            if (_passWordController.text.isEmpty)
+            {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(SnackBar(
+                  content: Text('请输入密码'),
+                ));
+              return;
+            }
+            // 进行网络请求  显示Loading框
+            // showLoadingDialog();
+            _doLogin();
+          },
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
           ),
@@ -138,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
             style: TextStyle(
               color: Color(0xFF527DAA),
               letterSpacing: 1.5,
-              fontSize: 18.0,
+              fontSize: 18.5,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -215,9 +300,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignupBtn() {
     return Container(
-        height:60,
+        height: 60,
         margin: EdgeInsets.fromLTRB(0, 20, 0, 20),
-        child:GestureDetector(
+        child: GestureDetector(
           onTap: () => print('Sign Up Button Pressed'),
           child: RichText(
             text: TextSpan(
@@ -241,67 +326,68 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-        )
-    );
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF73AEF5),
-                      Color(0xFF61A4F1),
-                      Color(0xFF478DE0),
-                      Color(0xFF398AE5),
-                    ],
-                    stops: [0.1, 0.4, 0.7, 0.9],
-                  ),
-                ),
-              ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 120.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 30.0),
-                      _buildPhoneTF(),
-                      SizedBox(
-                        height: 30.0,
+        appBar: AppBar(title: Text(GSYLocalizations.i18n(context).app_name)), // 必须要用GSYLocalizations.of先初始化
+        body: Builder(builder: (BuildContext context) {
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.light,
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(), // 收起焦点
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF73AEF5),
+                          Color(0xFF61A4F1),
+                          Color(0xFF478DE0),
+                          Color(0xFF398AE5),
+                        ],
+                        stops: [0.1, 0.4, 0.7, 0.9],
                       ),
-                      _buildPasswordTF(),
-                      _buildForgotPasswordBtn(),
-                      _buildRememberMeCheckbox(),
-                      _buildLoginBtn(),
-                      // _buildSignInWithText(),
-                      // _buildSocialBtnRow(),
-                      _buildSignupBtn(),
-                    ],
+                    ),
                   ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+                  Container(
+                    height: double.infinity,
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40.0,
+                        vertical: 120.0,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(height: 30.0),
+                          _buildPhoneTF(),
+                          SizedBox(
+                            height: 30.0,
+                          ),
+                          _buildPasswordTF(),
+                          _buildForgotPasswordBtn(),
+                          _buildRememberMeCheckbox(),
+                          _buildLoginBtn(context),
+                          // _buildSignInWithText(),
+                          // _buildSocialBtnRow(),
+                          _buildSignupBtn(),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        }));
   }
 }

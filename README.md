@@ -1,4 +1,4 @@
-# flutter_churuku
+# 出入库管家（Flutter）
 
 A new Flutter application of churuku app, let's finish this! 
 
