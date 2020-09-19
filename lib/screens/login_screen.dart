@@ -120,28 +120,31 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () => print('Login Button Pressed'),
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(
-          '登   录',
-          style: TextStyle(
-            color: Color(0xFF527DAA),
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
+    return Column(children: [
+      SizedBox(height: 80),
+      Container(
+        height: 45.0,
+        // padding: EdgeInsets.symmetric(vertical: 25.0),
+        width: double.infinity,
+        child: RaisedButton(
+          elevation: 5.0,
+          onPressed: () => print('Login Button Pressed'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          color: Colors.white,
+          child: Text(
+            '登   录',
+            style: TextStyle(
+              color: Color(0xFF527DAA),
+              letterSpacing: 1.5,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-    );
+      )
+    ]);
   }
 
   Widget _buildSignInWithText() {
@@ -211,30 +214,34 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildSignupBtn() {
-    return GestureDetector(
-      onTap: () => print('Sign Up Button Pressed'),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: '没有账号 ? ',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w400,
-              ),
+    return Container(
+        height:60,
+        margin: EdgeInsets.fromLTRB(0, 20, 0, 20),
+        child:GestureDetector(
+          onTap: () => print('Sign Up Button Pressed'),
+          child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: '没有账号 ? ',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                TextSpan(
+                  text: '立即注册 >',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-            TextSpan(
-              text: '立即注册 >',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        )
     );
   }
 
@@ -275,7 +282,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-
                       SizedBox(height: 30.0),
                       _buildPhoneTF(),
                       SizedBox(
