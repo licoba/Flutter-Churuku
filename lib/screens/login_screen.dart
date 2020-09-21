@@ -25,8 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
   var _password = '';
 
   //用户名输入框控制器，此控制器可以监听用户名输入框操作  https://blog.csdn.net/ljh910329/article/details/95471566
-  TextEditingController _userNameController = new TextEditingController();
-  TextEditingController _passWordController = new TextEditingController();
+  TextEditingController _userNameController = new TextEditingController(text:'17322309201');
+  TextEditingController _passWordController = new TextEditingController(text:'123456');
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
 
