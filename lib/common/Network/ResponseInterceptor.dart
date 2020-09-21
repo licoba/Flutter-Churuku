@@ -20,7 +20,7 @@ class ResponseInterceptors extends InterceptorsWrapper {
         int code = response.data["code"];
         if (code == 1) { // 这里定义得有点不一样，定义code = 1 为成功，其它为失败
           return new ResultData(response.data["data"], true, 1,
-              headers: response.headers);
+              headers: response.headers,msg: response.data["msg"]);
         } else { // 不等于0 的code ， 直接Toast
           Fluttertoast.cancel();
           Fluttertoast.showToast(

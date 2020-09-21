@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_churuku/common/Network/Api.dart';
+import 'package:flutter_churuku/common/Network/Code.dart';
 import 'package:flutter_churuku/common/Network/HttpManager.dart';
 import 'package:flutter_churuku/common/Network/ResultData.dart';
 import 'package:flutter_churuku/common/localization/default_localizations.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_churuku/common/utils/common_utils.dart';
 import 'package:flutter_churuku/models/user.dart';
 import 'package:flutter_churuku/others/constants.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -197,6 +199,16 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pop(context);
     var user = User.fromJson(userResultData.data);
     print('==> user:'+user.toString());
+    if(userResultData.code == Code.RES_SUCCESS){
+      Fluttertoast.cancel();
+      Fluttertoast.showToast(
+          msg: userResultData.msg,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green[400],
+          fontSize: 16.0
+      );
+    }
   }
 
   // 参照 https://book.flutterchina.club/chapter7/dailog.html
