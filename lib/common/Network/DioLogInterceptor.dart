@@ -75,7 +75,8 @@ class DioLogInterceptor extends Interceptor {
     String responseStr = "";
     var data = response.data;
     if (data is Map)
-      responseStr += data.mapToStructureString();
+      // responseStr += data.mapToStructureString();
+      responseStr += data.toString();
     else if (data is List)
       responseStr += data.listToStructureString();
     else

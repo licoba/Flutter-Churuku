@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_churuku/common/Network/Api.dart';
 import 'package:flutter_churuku/common/Network/HttpManager.dart';
+import 'package:flutter_churuku/common/Network/ResultData.dart';
 import 'package:flutter_churuku/common/localization/default_localizations.dart';
 import 'package:flutter_churuku/common/utils/common_utils.dart';
+import 'package:flutter_churuku/models/user.dart';
 import 'package:flutter_churuku/others/constants.dart';
+import 'package:flutter/services.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -24,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _passWordController = new TextEditingController();
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
+
   @override
   void initState() {
     _userNameController.addListener(() {
@@ -41,7 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
     // Clean up the focus node when the Form is disposed.
     _usernameFocusNode.dispose();
     _passwordFocusNode.dispose();
-
+    _userNameController.dispose();
+    _passWordController.dispose();
     super.dispose();
   }
 
@@ -59,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
-            focusNode: _usernameFocusNode,
+            // focusNode: _usernameFocusNode,
             controller: _userNameController,
             keyboardType: TextInputType.phone,
             //数字输入框
@@ -100,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
-            focusNode: _passwordFocusNode,
+            // focusNode: _passwordFocusNode,
             obscureText: true,
             controller: _passWordController,
             inputFormatters: [
@@ -125,11 +130,26 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildForgotPasswordBtn() {
+  Widget _buildForgotPasswordBtn(context) {
     return Container(
       alignment: Alignment.centerRight,
       child: FlatButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
+        onPressed: () {
+          print('Forgot Password Button Pressed');
+          final snackBar = SnackBar(
+            content: Text(' 😊 请联系 17322309201'),
+            action: SnackBarAction(
+              label: '复制号码',
+              onPressed: () {
+                // Some code to undo the change.
+                Clipboard.setData(ClipboardData(text: '17322309201'));
+              },
+            ),
+          );
+          Scaffold.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(snackBar);
+        },
         padding: EdgeInsets.only(right: 0.0),
         child: Text(
           '忘记密码?',
@@ -158,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           Text(
-            '记住账号',
+            '记住密码',
             style: kLabelStyle,
           ),
         ],
@@ -168,9 +188,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //登录方法
   _doLogin() async {
-    CommonUtils.showLoadingDialog(context,'正在登录，请稍后...');
-    await Api.login({'username':_userNameController.text.trim(),'password':_passWordController.text.trim(),'phone':_userNameController.text.trim()});
+    CommonUtils.showLoadingDialog(context, '正在登录，请稍后...');
+    ResultData userResultData =  await Api.login({
+      'username': _userNameController.text.trim(),
+      'password': _passWordController.text.trim(),
+      'phone': _userNameController.text.trim()
+    });
     Navigator.pop(context);
+    var user = User.fromJson(userResultData.data);
+    print('==> user:'+user.toString());
   }
 
   // 参照 https://book.flutterchina.club/chapter7/dailog.html
@@ -207,17 +233,15 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: () {
             print('Login Button Pressed');
             FocusScope.of(context).unfocus(); // 收起焦点
-            if (_userNameController.text.isEmpty)
-              {
-                Scaffold.of(context)
-                  ..hideCurrentSnackBar()
-                  ..showSnackBar(SnackBar(
-                    content: Text('请输入手机号'),
-                  ));
-                return;
-              }
-            if (_passWordController.text.isEmpty)
-            {
+            if (_userNameController.text.isEmpty) {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(SnackBar(
+                  content: Text('请输入手机号'),
+                ));
+              return;
+            }
+            if (_passWordController.text.isEmpty) {
               Scaffold.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(SnackBar(
@@ -313,12 +337,20 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSignupBtn() {
+  Widget _buildSignupBtn(context) {
     return Container(
         height: 60,
         margin: EdgeInsets.fromLTRB(0, 20, 0, 20),
         child: GestureDetector(
-          onTap: () => print('Sign Up Button Pressed'),
+          onTap: () {
+            print('Sign Up Button Pressed');
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(
+                content: Text(' 😊 暂未开放'),
+              ));
+            return;
+          },
           child: RichText(
             text: TextSpan(
               children: [
@@ -349,60 +381,60 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
         // appBar: AppBar(title: Text(GSYLocalizations.i18n(context).app_name)), // 必须要用GSYLocalizations.of先初始化
         body: Builder(builder: (BuildContext context) {
-          return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.light,
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(), // 收起焦点
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF73AEF5),
-                          Color(0xFF61A4F1),
-                          Color(0xFF478DE0),
-                          Color(0xFF398AE5),
-                        ],
-                        stops: [0.1, 0.4, 0.7, 0.9],
-                      ),
-                    ),
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(), // 收起焦点
+          child: Stack(
+            children: <Widget>[
+              Container(
+                height: double.infinity,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF73AEF5),
+                      Color(0xFF61A4F1),
+                      Color(0xFF478DE0),
+                      Color(0xFF398AE5),
+                    ],
+                    stops: [0.1, 0.4, 0.7, 0.9],
                   ),
-                  Container(
-                    height: double.infinity,
-                    child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40.0,
-                        vertical: 120.0,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(height: 30.0),
-                          _buildPhoneTF(),
-                          SizedBox(
-                            height: 30.0,
-                          ),
-                          _buildPasswordTF(),
-                          _buildForgotPasswordBtn(),
-                          _buildRememberMeCheckbox(),
-                          _buildLoginBtn(context),
-                          // _buildSignInWithText(),
-                          // _buildSocialBtnRow(),
-                          _buildSignupBtn(),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
+                ),
               ),
-            ),
-          );
-        }));
+              Container(
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40.0,
+                    vertical: 120.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 30.0),
+                      _buildPhoneTF(),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      _buildPasswordTF(),
+                      _buildForgotPasswordBtn(context),
+                      _buildRememberMeCheckbox(),
+                      _buildLoginBtn(context),
+                      // _buildSignInWithText(),
+                      // _buildSocialBtnRow(),
+                      _buildSignupBtn(context),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }));
   }
 }
