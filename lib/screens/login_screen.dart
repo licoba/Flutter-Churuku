@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_churuku/common/Network/Api.dart';
+import 'package:flutter_churuku/common/Network/HttpManager.dart';
 import 'package:flutter_churuku/common/localization/default_localizations.dart';
 import 'package:flutter_churuku/common/utils/common_utils.dart';
 import 'package:flutter_churuku/others/constants.dart';
@@ -20,17 +22,27 @@ class _LoginScreenState extends State<LoginScreen> {
   //用户名输入框控制器，此控制器可以监听用户名输入框操作  https://blog.csdn.net/ljh910329/article/details/95471566
   TextEditingController _userNameController = new TextEditingController();
   TextEditingController _passWordController = new TextEditingController();
-
+  FocusNode _usernameFocusNode = FocusNode();
+  FocusNode _passwordFocusNode = FocusNode();
   @override
   void initState() {
     _userNameController.addListener(() {
-      print('手机号更新：' + _userNameController.text);
+      // print('手机号更新：' + _userNameController.text);
     });
 
     _passWordController.addListener(() {
-      print('密码更新：' + _passWordController.text);
+      // print('密码更新：' + _passWordController.text);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    _usernameFocusNode.dispose();
+    _passwordFocusNode.dispose();
+
+    super.dispose();
   }
 
   Widget _buildPhoneTF() {
@@ -47,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
+            focusNode: _usernameFocusNode,
             controller: _userNameController,
             keyboardType: TextInputType.phone,
             //数字输入框
@@ -87,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
+            focusNode: _passwordFocusNode,
             obscureText: true,
             controller: _passWordController,
             inputFormatters: [
@@ -155,8 +169,8 @@ class _LoginScreenState extends State<LoginScreen> {
   //登录方法
   _doLogin() async {
     CommonUtils.showLoadingDialog(context,'正在登录，请稍后...');
-    // Navigator.pop(context);
-    // yield LoginSuccessAction(action.context, (res != null && res.result));
+    await Api.login({'username':_userNameController.text.trim(),'password':_passWordController.text.trim(),'phone':_userNameController.text.trim()});
+    Navigator.pop(context);
   }
 
   // 参照 https://book.flutterchina.club/chapter7/dailog.html
@@ -192,6 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
           elevation: 5.0,
           onPressed: () {
             print('Login Button Pressed');
+            FocusScope.of(context).unfocus(); // 收起焦点
             if (_userNameController.text.isEmpty)
               {
                 Scaffold.of(context)
@@ -332,7 +347,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(GSYLocalizations.i18n(context).app_name)), // 必须要用GSYLocalizations.of先初始化
+        // appBar: AppBar(title: Text(GSYLocalizations.i18n(context).app_name)), // 必须要用GSYLocalizations.of先初始化
         body: Builder(builder: (BuildContext context) {
           return AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle.light,
