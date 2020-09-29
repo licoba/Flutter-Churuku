@@ -38,7 +38,7 @@ class DioLogInterceptor extends Interceptor {
         "- HEADER:\n${err.response.headers.map.mapToStructureString()}\n";
     if (err.response != null && err.response.data != null) {
       print('- ERROR!! ${err.type.toString()}');
-      errorStr += "- ERROR:\n${_parseResponse(err.response)}\n";
+      errorStr += "- ERROR:\n${err.response.toString()}\n";
     } else {
       errorStr += "- ERRORTYPE: ${err.type}\n";
       errorStr += "- MSG: ${err.message}\n";
@@ -60,7 +60,7 @@ class DioLogInterceptor extends Interceptor {
     responseStr += "- STATUS: ${response.statusCode}\n";
 
     if (response.data != null) {
-      responseStr += "- BODY:\n ${_parseResponse(response)}";
+      responseStr += "- BODY:\n ${response.toString()}";
     }
     printWrapped(responseStr);
     return response;
@@ -71,19 +71,7 @@ class DioLogInterceptor extends Interceptor {
     pattern.allMatches(text).forEach((match) => print(match.group(0)));
   }
 
-  String _parseResponse(Response response) {
-    String responseStr = "";
-    var data = response.data;
-    if (data is Map)
-      // responseStr += data.mapToStructureString();
-      responseStr += data.toString();
-    else if (data is List)
-      responseStr += data.listToStructureString();
-    else
-      responseStr += response.data.toString();
 
-    return responseStr;
-  }
 }
 
 ///Map拓展，MAp转字符串输出

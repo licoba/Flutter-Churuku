@@ -1,7 +1,7 @@
 ///错误编码
 class Code {
 
-  static const RES_SUCCESS = 1;
+  static const RES_SUCCESS = 0;
 
   ///网络错误
   static const NETWORK_ERROR = -1;

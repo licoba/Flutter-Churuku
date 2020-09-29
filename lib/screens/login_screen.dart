@@ -12,6 +12,7 @@ import 'package:flutter_churuku/common/utils/common_utils.dart';
 import 'package:flutter_churuku/models/user.dart';
 import 'package:flutter_churuku/others/constants.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_churuku/utils/sp_util.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,13 +21,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _rememberMe = false;
-  var _username = '';
-  var _password = '';
+  bool _rememberPassWord = false;
 
   //用户名输入框控制器，此控制器可以监听用户名输入框操作  https://blog.csdn.net/ljh910329/article/details/95471566
-  TextEditingController _userNameController = new TextEditingController(text:'17322309201');
-  TextEditingController _passWordController = new TextEditingController(text:'123456');
+  TextEditingController _userNameController =
+      new TextEditingController(text: '');
+  TextEditingController _passWordController =
+      new TextEditingController(text: '');
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
 
@@ -39,6 +40,15 @@ class _LoginScreenState extends State<LoginScreen> {
     _passWordController.addListener(() {
       // print('密码更新：' + _passWordController.text);
     });
+    User user = SpUtil.getObj("userInfo", (v) => User.fromJson(v));
+    print('读取到用户：' + user.toString());
+    if (user != null) {
+      _userNameController.text = user.username;
+    }
+    _rememberPassWord = SpUtil.getBool("rememberPassWord", defValue: false);
+    print('读取到记住密码：' + _rememberPassWord.toString());
+    if (_rememberPassWord)
+      _passWordController.text = user.password;
     super.initState();
   }
 
@@ -68,11 +78,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             // focusNode: _usernameFocusNode,
             controller: _userNameController,
-            keyboardType: TextInputType.phone,
+            keyboardType: TextInputType.text,
             //数字输入框
             inputFormatters: [
               LengthLimitingTextInputFormatter(11),
-              FilteringTextInputFormatter.digitsOnly, // 新版的API
+              // FilteringTextInputFormatter.digitsOnly, // 新版的API
             ],
             style: TextStyle(
               color: Colors.white,
@@ -81,10 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 12.0),
               prefixIcon: Icon(
-                Icons.phone_android,
+                Icons.person,
                 color: Colors.white,
               ),
-              hintText: '请输入手机号',
+              hintText: '请输入用户名',
               hintStyle: kHintTextStyle,
             ),
           ),
@@ -139,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           print('Forgot Password Button Pressed');
           final snackBar = SnackBar(
-            content: Text(' 😊 请联系 17322309201'),
+            content: Text(' 😊 请前往 玩Android 找回密码'),
             action: SnackBarAction(
               label: '复制号码',
               onPressed: () {
@@ -169,12 +179,13 @@ class _LoginScreenState extends State<LoginScreen> {
           Theme(
             data: ThemeData(unselectedWidgetColor: Colors.white),
             child: Checkbox(
-              value: _rememberMe,
+              value: _rememberPassWord,
               checkColor: Colors.green,
               activeColor: Colors.white,
               onChanged: (value) {
                 setState(() {
-                  _rememberMe = value;
+                  print('_rememberPassWord: '+value.toString());
+                  _rememberPassWord = value;
                 });
               },
             ),
@@ -191,23 +202,24 @@ class _LoginScreenState extends State<LoginScreen> {
   //登录方法
   _doLogin() async {
     CommonUtils.showLoadingDialog(context, '正在登录，请稍后...');
-    ResultData userResultData =  await Api.login({
+    ResultData userResultData = await Api.login({
       'username': _userNameController.text.trim(),
       'password': _passWordController.text.trim(),
-      'phone': _userNameController.text.trim()
     });
     Navigator.pop(context);
-    var user = User.fromJson(userResultData.data);
-    print('==> user:'+user.toString());
-    if(userResultData.code == Code.RES_SUCCESS){
+    User user = User.fromJson(userResultData.data);
+    print('==> user:' + user.toString());
+    if (userResultData.isSuccess) {
+      if (_rememberPassWord) user.password = _passWordController.text;
+      SpUtil.putObject("userInfo", user);
+      SpUtil.putBool("rememberPassWord", _rememberPassWord);
       Fluttertoast.cancel();
       Fluttertoast.showToast(
-          msg: userResultData.msg,
+          msg: '登录成功',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.green[400],
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     }
   }
 
@@ -359,7 +371,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Scaffold.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(SnackBar(
-                content: Text(' 😊 暂未开放'),
+                content: Text(' 😊 请前往 玩Android 进行注册'),
               ));
             return;
           },

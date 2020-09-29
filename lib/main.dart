@@ -4,8 +4,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'common/localization/gsy_localizations_delegate.dart';
 import 'screens/navigation_home_screen.dart';
+import 'utils/sp_util.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SpUtil.getInstance();
   runApp(MyApp());
 }
 

@@ -17,21 +17,23 @@ class ResponseInterceptors extends InterceptorsWrapper {
       if (response.statusCode == 200 || response.statusCode == 201) {
         ///内层需要根据公司实际返回结构解析，一般会有code，data，msg字段
 
-        int code = response.data["code"];
-        if (code == 1) { // 这里定义得有点不一样，定义code = 1 为成功，其它为失败
-          return new ResultData(response.data["data"], true, 1,
-              headers: response.headers,msg: response.data["msg"]);
-        } else { // 不等于0 的code ， 直接Toast
+        int code = response.data["errorCode"];
+        if (code == 0) {
+          // 这里定义得有点不一样，定义code = 0 为成功，其它为失败
+          return new ResultData(
+              response.data["data"], true, response.data["code"],
+              headers: response.headers, msg: response.data["errorMsg"]);
+        } else {
+          // 不等于0 的code ， 直接Toast
           Fluttertoast.cancel();
           Fluttertoast.showToast(
-              msg: response.data['msg'],
+              msg: response.data['errorMsg'],
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
               backgroundColor: Colors.red[400],
               textColor: Colors.white,
-              fontSize: 16.0
-          );
+              fontSize: 16.0);
           return new ResultData(response.data, false, 200,
               headers: response.headers);
         }
