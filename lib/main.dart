@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_churuku/others/constants.dart';
 import 'package:flutter_churuku/screens/login_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'common/global/global_object.dart';
 import 'common/localization/gsy_localizations_delegate.dart';
 import 'screens/navigation_home_screen.dart';
 import 'utils/sp_util.dart';
@@ -9,6 +11,7 @@ import 'utils/sp_util.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SpUtil.getInstance();
+  Global.init();
   runApp(MyApp());
 }
 
@@ -17,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // 国际化设置相关
+        // 国际化设置相关
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -45,7 +48,7 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         // home: MyHomePage(title: 'Flutter Demo Home Page'),
-        home: LoginScreen());
+        home: SpUtil.getBool(kLogin) ? NavigationHomeScreen() : LoginScreen());
   }
 }
 

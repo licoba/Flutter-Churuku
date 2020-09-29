@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_churuku/common/global/global_object.dart';
 
 import 'app_theme.dart';
 
@@ -25,19 +26,54 @@ class _HomeDrawerState extends State<HomeDrawer> {
     drawerList = <DrawerList>[
       DrawerList(
         index: DrawerIndex.HOME,
-        labelName: 'Home',
+        labelName: '首页',
         icon: Icon(Icons.home),
       ),
       DrawerList(
-        index: DrawerIndex.Help,
-        labelName: 'Help',
+        index: DrawerIndex.GuangChang,
+        labelName: '广场',
+        icon: Icon(Icons.home),
+      ),
+      DrawerList(
+        index: DrawerIndex.DaoHang,
+        labelName: '导航',
+        icon: Icon(Icons.home),
+      ),
+      DrawerList(
+        index: DrawerIndex.WenDa,
+        labelName: '问答',
+        icon: Icon(Icons.home),
+      ),
+      DrawerList(
+        index: DrawerIndex.TiXi,
+        labelName: '体系',
+        icon: Icon(Icons.home),
+      ),
+      DrawerList(
+        index: DrawerIndex.XiangMu,
+        labelName: '项目',
+        icon: Icon(Icons.home),
+      ),
+      DrawerList(
+        index: DrawerIndex.GongZhongHao,
+        labelName: '公众号',
+        icon: Icon(Icons.home),
+      ),
+      DrawerList(
+        index: DrawerIndex.XiangMuFenLei,
+        labelName: '项目分类',
         isAssetsImage: true,
         imageName: 'assets/images/supportIcon.png',
       ),
       DrawerList(
-        index: DrawerIndex.FeedBack,
-        labelName: 'FeedBack',
-        icon: Icon(Icons.help),
+        index: DrawerIndex.GongJu,
+        labelName: '工具',
+        icon: Icon(Icons.home),
+      ),
+      DrawerList(
+        index: DrawerIndex.ShouCang,
+        labelName: '收藏',
+        icon: Icon(Icons.home),
       ),
       DrawerList(
         index: DrawerIndex.Invite,
@@ -105,7 +141,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, left: 4),
                     child: Text(
-                      '八八 licoba',
+                      Global.profile.user.username,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.grey,
@@ -268,6 +304,15 @@ enum DrawerIndex {
   About,
   Invite,
   Testing,
+  GuangChang,
+  DaoHang,
+  WenDa,
+  TiXi,
+  XiangMu,
+  GongZhongHao,
+  XiangMuFenLei,
+  GongJu,
+  ShouCang
 }
 
 class DrawerList {

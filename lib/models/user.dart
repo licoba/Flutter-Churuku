@@ -1,3 +1,5 @@
+import 'package:flutter_churuku/common/Notifier/profile_change_notifier.dart';
+
 /// admin : false
 /// chapterTops : [1,2,3]
 /// coinCount : 0
@@ -12,7 +14,7 @@
 /// type : 0
 /// username : "licoba"
 
-class User {
+class User extends ProfileChangeNotifier{
   bool _admin;
   List<int> _chapterTops;
   int _coinCount;
@@ -171,6 +173,7 @@ class User {
   set type(int value) {
     _type = value;
   }
+
 
   set username(String value) {
     _username = value;

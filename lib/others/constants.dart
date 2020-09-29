@@ -20,3 +20,9 @@ final kBoxDecorationStyle = BoxDecoration(
     ),
   ],
 );
+
+// 存储在本地的变量
+final kUserInfo = "userInfo";
+final kRememberPassWord = "rememberPassWord";
+final kLogin = "login";
+final kProfile = "profile";

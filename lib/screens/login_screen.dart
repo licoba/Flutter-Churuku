@@ -7,13 +7,17 @@ import 'package:flutter_churuku/common/Network/Api.dart';
 import 'package:flutter_churuku/common/Network/Code.dart';
 import 'package:flutter_churuku/common/Network/HttpManager.dart';
 import 'package:flutter_churuku/common/Network/ResultData.dart';
+import 'package:flutter_churuku/common/global/global_object.dart';
 import 'package:flutter_churuku/common/localization/default_localizations.dart';
 import 'package:flutter_churuku/common/utils/common_utils.dart';
+import 'package:flutter_churuku/models/profile.dart';
 import 'package:flutter_churuku/models/user.dart';
 import 'package:flutter_churuku/others/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_churuku/utils/sp_util.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../main.dart';
+import 'navigation_home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -36,19 +40,18 @@ class _LoginScreenState extends State<LoginScreen> {
     _userNameController.addListener(() {
       // print('手机号更新：' + _userNameController.text);
     });
-
     _passWordController.addListener(() {
       // print('密码更新：' + _passWordController.text);
     });
-    User user = SpUtil.getObj("userInfo", (v) => User.fromJson(v));
-    print('读取到用户：' + user.toString());
-    if (user != null) {
-      _userNameController.text = user.username;
+    Profile profile = Global.profile;
+    if (profile.user != null) {
+      print('读取到用户：' + profile.user.toString());
+      _userNameController.text = profile.user.username;
     }
-    _rememberPassWord = SpUtil.getBool("rememberPassWord", defValue: false);
+    _rememberPassWord = SpUtil.getBool(kRememberPassWord, defValue: false);
     print('读取到记住密码：' + _rememberPassWord.toString());
     if (_rememberPassWord)
-      _passWordController.text = user.password;
+      _passWordController.text = profile.user.password;
     super.initState();
   }
 
@@ -211,15 +214,20 @@ class _LoginScreenState extends State<LoginScreen> {
     print('==> user:' + user.toString());
     if (userResultData.isSuccess) {
       if (_rememberPassWord) user.password = _passWordController.text;
-      SpUtil.putObject("userInfo", user);
-      SpUtil.putBool("rememberPassWord", _rememberPassWord);
-      Fluttertoast.cancel();
-      Fluttertoast.showToast(
-          msg: '登录成功',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green[400],
-          fontSize: 16.0);
+      Global.profile.user = user;
+      SpUtil.putObject(kProfile, Global.profile);
+      SpUtil.putBool(kRememberPassWord, _rememberPassWord);
+      SpUtil.putBool(kLogin, true);
+      // Fluttertoast.cancel();
+      // Fluttertoast.showToast(
+      //     msg: '登录成功',
+      //     toastLength: Toast.LENGTH_SHORT,
+      //     gravity: ToastGravity.BOTTOM,
+      //     backgroundColor: Colors.green[400],
+      //     fontSize: 16.0);
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return NavigationHomeScreen();
+      }));
     }
   }
 
